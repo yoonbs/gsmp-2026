@@ -201,10 +201,11 @@
     document.getElementById('modal').style.display = 'block';
   }
 
-  function submitFinal() {
+function submitFinal() {
     const b = document.getElementById('finalBtn');
     b.disabled = true;
     document.getElementById('loader').style.display = 'block';
+    
     let w = 0;
     const t = setInterval(() => { if(w<95) w+=5; document.getElementById('pBar').style.width = w + '%'; }, 150);
 
@@ -219,11 +220,23 @@
       userEmail: document.getElementById('userEmail').value
     };
 
-    google.script.run.withSuccessHandler(() => {
+    // [중요!] 본인의 구글 웹 앱 URL 주소를 아래 따옴표 안에 넣으세요.
+    const GAS_URL = "https://script.google.com/macros/s/AKfycb.../exec";
+
+    // google.script.run 대신 fetch를 사용합니다.
+    fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify(d),
+      mode: "no-cors" // 구글 보안 정책 대응
+    }).then(() => {
       clearInterval(t);
       alert('참여 의향서 제출이 성공적으로 완료되었습니다.');
       location.reload();
-    }).processForm(d);
+    }).catch(err => {
+      alert('전송 중 오류가 발생했습니다: ' + err);
+      b.disabled = false;
+      document.getElementById('loader').style.display = 'none';
+    });
   }
 </script>
 </body>
