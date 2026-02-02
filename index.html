@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: 'Apple SD Gothic Neo', sans-serif; background-color: #f4f7fa; padding: 40px 20px; color: #334155; }
+    .container { max-width: 900px; margin: auto; background: white; padding: 45px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    
+    /* 제목 섹션: 두 줄 배치 및 굵게 */
+    .header { text-align: center; margin-bottom: 40px; }
+    .header h2 { font-weight: 800; color: #1e3a8a; font-size: 26px; line-height: 1.4; margin: 0; }
+    .header .sub-title { font-size: 24px; display: block; margin-top: 5px; }
+    .header .guide-box { font-size: 14px; line-height: 1.6; color: #475569; background: #f1f5f9; padding: 20px; border-radius: 10px; border-left: 5px solid #3152d5; text-align: left; margin-top: 25px; }
+
+    /* 입력 폼 그리드 */
+    .row { display: flex; gap: 25px; margin-bottom: 22px; }
+    .col { flex: 1; }
+    label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 14px; color: #1e293b; }
+    input, textarea { width: 100%; padding: 12px 15px; border: 1.5px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 15px; background: #fff; }
+    
+    /* 비활성화 상태 디자인 */
+    input:disabled, textarea:disabled { background: #f1f5f9; cursor: not-allowed; border-color: #e2e8f0; color: #94a3b8; }
+
+    /* 지원 항목 박스 */
+    .svc-box { border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 25px 20px; margin: 30px 0 10px; position: relative; }
+    .svc-tag { position: absolute; top: -11px; left: 15px; background: white; padding: 0 10px; font-size: 13px; font-weight: bold; color: #3152d5; }
+    .svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+    .svc-item { display: flex; align-items: center; font-size: 12px; cursor: pointer; }
+    .svc-item input { margin-right: 8px; width: 18px; height: 18px; cursor: pointer; }
+    .svc-disclaimer { font-size: 12px; color: #888; margin-bottom: 30px; padding-left: 5px; }
+
+    /* 참여 의사 체크 라인 (이 체크박스가 하단을 활성화함) */
+    .agree-line { display: flex; align-items: center; margin-bottom: 30px; padding: 15px; background: #fff8f0; border-radius: 8px; border: 1px solid #ffe8cc; cursor: pointer; }
+    .agree-line input { width: 22px; height: 22px; margin: 0 15px 0 0; cursor: pointer; flex-shrink: 0; }
+    .agree-line span { font-weight: bold; font-size: 15px; color: #d9480f; }
+
+    /* 개인정보 동의 섹션 */
+    .privacy-container { background: #fdfdfd; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; margin: 25px 0; }
+    .privacy-container h4 { margin: 0 0 12px 0; font-size: 14px; border-left: 4px solid #3152d5; padding-left: 10px; color: #1e3a8a; }
+    .privacy-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 15px; background: white; }
+    .privacy-table th, .privacy-table td { border: 1px solid #eee; padding: 10px; text-align: left; }
+    .privacy-table th { background: #f9f9f9; width: 30%; font-weight: bold; }
+    
+    /* 체크박스 정렬 보정 */
+    .privacy-consent-row { display: flex; align-items: center; gap: 12px; margin-top: 15px; cursor: pointer; font-size: 14px; font-weight: bold; color: #1e3a8a; }
+    .privacy-consent-row input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
+
+    .btn-submit { background: #3152d5; color: white; border: none; padding: 18px; border-radius: 8px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .btn-submit:hover { background: #1e3bb3; }
+    .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+    /* 모달 팝업 */
+    #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9998; }
+    #modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 50px; width: 90%; max-width: 680px; border-radius: 12px; z-index: 9999; }
+    .doc-frame { border: 2px solid #1e293b; padding: 45px; min-height: 480px; }
+    .sig-row { margin-top: 50px; text-align: right; font-size: 19px; font-weight: bold; color: #1e3a8a; }
+
+    #loader { display: none; text-align: center; margin-top: 25px; }
+    .p-track { width: 100%; background: #f1f5f9; height: 8px; border-radius: 4px; overflow: hidden; }
+    .p-fill { width: 0%; height: 100%; background: #3152d5; transition: width 0.3s; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h2>「2026 글로벌 SaaS 마켓플레이스 지원사업」</h2>
+    <h2 class="sub-title">기업지원 프로그램 참여 의향서</h2>
+    <div class="guide-box">
+      2026 GSMP 사업에서 제공하는 기업 지원 프로그램에 관심이 있으시면 아래 내용을 작성하여 제출 부탁드립니다.<br>
+      <b>※ 본 의향서는 사업 기획 단계의 수요 파악용으로, 어떠한 법적 구속력도 발생하지 않습니다.</b>
+    </div>
+  </div>
+  
+  <form id="gsmpForm">
+    <div class="row">
+      <div class="col"><label>기업명*</label><input type="text" id="company" placeholder="예) (주)샘플테크" required></div>
+      <div class="col"><label>대표 제품명*</label><input type="text" id="product" placeholder="예) Sample Cloud Suite" required></div>
+    </div>
+
+    
+
+    <div class="svc-box">
+      <span class="svc-tag">지원 요청 항목(1개 이상 선택)*</span>
+      <div class="svc-grid">
+        <label class="svc-item"><input type="checkbox" name="svc" value="SaaS 마켓플레이스 등록 지원"> SaaS 마켓플레이스 등록 관련 기술/행정 지원</label>
+        <label class="svc-item"><input type="checkbox" name="svc" value="해외 현지 규제/인증 컨설팅"> 해외 현지 규제/인증 컨설팅 </label>
+        <label class="svc-item"><input type="checkbox" name="svc" value="해외 현지 실증 지원"> 해외 현지 실증 지원</label>
+        <label class="svc-item"><input type="checkbox" name="svc" value="해외 홍보·마케팅 지원"> 해외 홍보·마케팅 지원</label>
+        <label class="svc-item"><input type="checkbox" name="svc" value="해외 현지 파트너 발굴"> 해외 현지 파트너 발굴</label>
+        <label class="svc-item"><input type="checkbox" name="svc" value="기타 사항"> 기타 의견</label>
+  
+      </div>
+    </div>
+    
+    <label>기타 의견</label>
+    <textarea id="status" placeholder="기타 의견을 자유롭게 입력해주세요."></textarea>
+
+    <div class="svc-disclaimer">※ 2026년 GSMP 사업의 구체적인 내용이 아직 확정되지 않은 관계로, 실제 제공되는 지원 프로그램은 변경될 수 있습니다.</div>
+
+    <label class="agree-line">
+      <input type="checkbox" id="supportIntent" onchange="toggleFields()">
+      <span>상기 항목으로 지원을 받고 싶다는 참여 의사가 있습니다. (체크 시 하단 정보 입력 활성화)</span>
+    </label>
+
+    <div class="row">
+      <div class="col"><label>작성자 성함*</label><input type="text" id="userName" class="cond-field" placeholder="예) 홍길동" disabled required></div>
+      <div class="col"><label>부서 / 직급</label><input type="text" id="userDept" class="cond-field" placeholder="예) 기획팀 / 과장" disabled required></div>
+    </div>
+
+    <div class="row">
+      <div class="col"><label>전화번호</label><input type="text" id="userTel" class="cond-field" placeholder="010-0000-0000" disabled required></div>
+      <div class="col"><label>이메일</label><input type="email" id="userEmail" class="cond-field" placeholder="example@company.com" disabled required></div>
+    </div>
+
+    <div class="privacy-container">
+      <h4>개인정보 수집·이용 동의 내역</h4>
+      <table class="privacy-table">
+        <tr><th>수집·이용 목적</th><td>2026 GSMP 지원대상 기업 신청 의향 조사 및 사업 안내</td></tr>
+        <tr><th>수집 항목</th><td>담당자 성명, 부서/직급, 전화번호, 전자우편</td></tr>
+        <tr><th>보유 및 이용기간</th><td>사업 종료일로부터 1년 (공공기록물관리법시행령 제26조①항 준용)</td></tr>
+      </table>
+      <label class="privacy-consent-row">
+        <input type="checkbox" id="privacyAgree" class="cond-field" disabled required> 
+        <span>본 조사를 위한 개인정보 수집 및 이용에 동의합니다.</span>
+      </label>
+    </div>
+
+    <button type="button" id="mainBtn" class="btn-submit cond-field" onclick="openPreview()" disabled>의향서 미리보기 및 최종 제출</button>
+  </form>
+</div>
+
+<div id="overlay" onclick="closeModal()"></div>
+<div id="modal">
+  <div class="doc-frame">
+    <h2 style="text-align:center; text-decoration: underline; margin-bottom: 50px; font-size: 22px;">「2026 글로벌 SaaS 마켓플레이스 지원사업」<br> 기업지원 프로그램 참여 의향서</h2>
+    <p><b>기 업 명 :</b> <span id="vComp"></span></p>
+    <p><b>지원 요청 항목:</b> <span id="vSvc"></span></p>
+    <br>
+    <p style="line-height: 2; font-size: 16px;">
+      본 기업은 한국정보통신기술협회(TTA) 컨소시엄이「2026 글로벌 SaaS 마켓플레이스 지원사업」을 수행할 경우 기업지원 프로그램에 참여할 의향이 있음을 알려드립니다.
+    </p>
+    <div class="sig-row">
+      2026년 02월 02일<br><br>
+      작성자 : <span id="vSig"></span>
+    </div>
+    <div style="text-align:center; margin-top:60px; font-weight:bold; font-size:20px;">한국정보통신기술협회 귀중</div>
+  </div>
+   * 본 의향서는 신청 기업에 법적인 구속력이 없으며, 사업 기획을 위한 수요 파악 및 기초 자료로만 활용됩니다.
+  <div id="loader">
+    <div class="p-track"><div id="pBar" class="p-fill"></div></div>
+    <p style="font-size:12.5px; margin-top:8px; color:#64748b;">의향서를 전송 중입니다...</p>
+  </div>
+
+  <div id="mBtns" style="margin-top:35px; display:flex; gap:12px;">
+    <button id="finalBtn" class="btn-submit" style="flex:2;" onclick="submitFinal()">최종 제출</button>
+    <button class="btn-submit" style="flex:1; background:#64748b;" onclick="closeModal()">수정</button>
+  </div>
+</div>
+
+<script>
+  // [보정] 하단 필드들을 한꺼번에 활성화/비활성화 하는 함수
+  function toggleFields() {
+    const isChecked = document.getElementById('supportIntent').checked;
+    
+    // cond-field 클래스를 가진 모든 요소를 찾아 상태를 변경
+    const fields = document.querySelectorAll('.cond-field');
+    fields.forEach(f => {
+      f.disabled = !isChecked;
+    });
+    
+    // 제출 버튼도 명시적으로 제어
+    document.getElementById('mainBtn').disabled = !isChecked;
+  }
+
+  function closeModal() { 
+    document.getElementById('overlay').style.display = 'none'; 
+    document.getElementById('modal').style.display = 'none'; 
+  }
+
+  function openPreview() {
+    const comp = document.getElementById('company').value;
+    const name = document.getElementById('userName').value;
+    const agree = document.getElementById('supportIntent').checked;
+    const priv = document.getElementById('privacyAgree').checked;
+    
+    const checkedSvcs = document.querySelectorAll('input[name="svc"]:checked');
+    if (checkedSvcs.length === 0) {
+      alert('지원 희망 항목을 최소 1개 이상 선택해 주세요.');
+      return;
+    }
+
+    if(!comp || !name || !agree || !priv) {
+      alert('모든 필수 정보 입력 및 동의체를 완료해 주세요.'); return;
+    }
+    
+    document.getElementById('vComp').innerText = comp;
+    document.getElementById('vSig').innerText = name;
+    document.getElementById('vSvc').innerText = Array.from(document.querySelectorAll('input[name="svc"]:checked')).map(e => e.value).join(", ") || "선택 없음";
+    
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('modal').style.display = 'block';
+  }
+
+  function submitFinal() {
+    const b = document.getElementById('finalBtn');
+    b.disabled = true;
+    document.getElementById('loader').style.display = 'block';
+    let w = 0;
+    const t = setInterval(() => { if(w<95) w+=5; document.getElementById('pBar').style.width = w + '%'; }, 150);
+
+    const d = {
+      company: document.getElementById('company').value,
+      product: document.getElementById('product').value,
+      status: document.getElementById('status').value,
+      services: Array.from(document.querySelectorAll('input[name="svc"]:checked')).map(e => e.value).join(", "),
+      userName: document.getElementById('userName').value,
+      userDept: document.getElementById('userDept').value,
+      userTel: document.getElementById('userTel').value,
+      userEmail: document.getElementById('userEmail').value
+    };
+
+    google.script.run.withSuccessHandler(() => {
+      clearInterval(t);
+      alert('참여 의향서 제출이 성공적으로 완료되었습니다.');
+      location.reload();
+    }).processForm(d);
+  }
+</script>
+</body>
+</html>
